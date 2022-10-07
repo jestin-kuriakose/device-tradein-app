@@ -1,14 +1,24 @@
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link
+} from "react-router-dom";
+
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import TradeinForm from "./components/TradeinForm";
+import Home from "./pages/Home";
+import QuoteResult from "./pages/QuoteResult";
 
 function App() {
   return (
-    <div>
-      <Header/>
-      <TradeinForm/>
-      <Footer/>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home/>}/>
+        <Route path="/quote" element={<QuoteResult/>}/>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -1,16 +1,28 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from "react-router-dom";
 import { dummyPhoneData } from '../dummyData'
 
 const TradeinForm = () => {
     const [phoneData, setPhoneData] = useState([])
     const [selectedPhoneData, setSelectedPhoneData] = useState({})
-    const [inputData, setInputData] = useState({})
+    const navigate = useNavigate()
+    const [inputData, setInputData] = useState({
+        back_con: "",
+        bent: "",
+        color: "",
+        condition: "",
+        misc: "",
+        name: "",
+        power_on: "",
+        screen_con: "",
+        size: ""})
 
     useEffect(()=>{
         const getPhoneData = () => {
             setPhoneData(dummyPhoneData)
         }
         getPhoneData()
+
     },[])
 
     const handleChange = (e) => {
