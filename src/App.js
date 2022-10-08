@@ -5,9 +5,6 @@ import {
   Link
 } from "react-router-dom";
 
-import Footer from "./components/Footer";
-import Header from "./components/Header";
-import TradeinForm from "./components/TradeinForm";
 import Home from "./pages/Home";
 import QuoteResult from "./pages/QuoteResult";
 

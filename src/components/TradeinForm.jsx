@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from "react-router-dom";
 import { dummyPhoneData } from '../dummyData'
 
 const TradeinForm = () => {
     const [phoneData, setPhoneData] = useState([])
     const [selectedPhoneData, setSelectedPhoneData] = useState({})
-    const navigate = useNavigate()
     const [inputData, setInputData] = useState({
         back_con: "",
         bent: "",
@@ -26,9 +24,10 @@ const TradeinForm = () => {
     },[])
 
     const handleChange = (e) => {
-        const [filteredPhoneData] = phoneData.filter(data => data.id == e.target.value)
+        const [filteredPhoneData] = phoneData.filter(data => data.id.toString() === e.target.value)
         setSelectedPhoneData(filteredPhoneData)
-        setInputData(prev=>({...prev, name: filteredPhoneData.name}))
+        setInputData(prev=>({...prev, name: filteredPhoneData?.name}))
+        console.log(inputData)
     }
 
     const handleSubmit = (e) => {
@@ -47,7 +46,7 @@ const TradeinForm = () => {
                     <label className="form-label">Select your phone</label>
                     <select className='form-select' defaultValue={'DEFAULT'} onChange={handleChange}>
                         <option disabled value={'DEFAULT'}> -- select an option -- </option>
-                        {phoneData.map((data)=>(
+                        {phoneData?.map((data)=>(
                             <option key={data.id} value={data.id}>{data.name}</option>
                         ))}
                     </select>
