@@ -13,7 +13,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home/>}/>
-        <Route path="/quote" element={<QuoteResult/>}/>
+        <Route path="/quote/:quoteId" element={<QuoteResult/>}/>
       </Routes>
     </BrowserRouter>
   );

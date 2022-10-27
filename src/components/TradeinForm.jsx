@@ -1,9 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import { dummyPhoneData } from '../dummyData'
+import {
+    collection,
+    query,
+    getDocs,
+    updateDoc,
+    deleteDoc,
+    doc,
+    onSnapshot,
+    setDoc,
+    addDoc,
+  } from "firebase/firestore";
+  import { db } from "../firebase";
+import { useNavigate } from 'react-router-dom';
 
 const TradeinForm = () => {
     const [phoneData, setPhoneData] = useState([])
     const [selectedPhoneData, setSelectedPhoneData] = useState({})
+    const [missingOptions, setMissingOptions] = useState(false)
     const [inputData, setInputData] = useState({
         back_con: "",
         bent: "",
@@ -14,10 +28,18 @@ const TradeinForm = () => {
         power_on: "",
         screen_con: "",
         size: ""})
+const navigate = useNavigate()
 
     useEffect(()=>{
-        const getPhoneData = () => {
-            setPhoneData(dummyPhoneData)
+        const getPhoneData = async () => {
+            const querySnapshot = await getDocs(collection(db, "phoneData"));
+            let dataWithId = []
+            querySnapshot.forEach((doc) => {
+                let data = doc.data()
+                data["id"] = doc.id
+                dataWithId.push(data)
+              });
+            setPhoneData(dataWithId)
         }
         getPhoneData()
 
@@ -26,13 +48,34 @@ const TradeinForm = () => {
     const handleChange = (e) => {
         const [filteredPhoneData] = phoneData.filter(data => data.id.toString() === e.target.value)
         setSelectedPhoneData(filteredPhoneData)
-        setInputData(prev=>({...prev, name: filteredPhoneData?.name}))
-        console.log(inputData)
+        setInputData(prev=>({...prev, name: filteredPhoneData?.name, phoneId: e.target.value}))
     }
 
     const handleSubmit = (e) => {
         e.preventDefault()
+        const values = Object.values(inputData)
+        const index = values.findIndex(v => v === "")
+        if(index > -1) {
+            setMissingOptions(true)
+        } else {
+            setMissingOptions(false)
+            const docId = sendDataToDatabase(inputData)
+            docId.then(id=>navigate(`/quote/${id}`))
+        }
         console.log(inputData)
+    }
+
+    const sendDataToDatabase = async(data) => {
+        let docId
+        try {
+            const docRef = await addDoc(collection(db, "customerSelection"), data)
+            console.log("Document written with ID: ", docRef.id);
+            return docRef.id
+            
+        } catch(err) {
+            console.log("Error adding document: ", err)
+        }
+
     }
     
   return (
@@ -108,11 +151,11 @@ const TradeinForm = () => {
                 <div className='row shadow-lg p-3 mb-5 bg-white rounded'>
                     <h5 className='row-auto'>Do ALL of the following function properly?</h5>
                     <p>This includes: Cameras, Speakers, Home Button, Power Button, Volume Button, Microphone, and Battery.</p>
-                    <button className={"btn col-auto lg-auto m-3 " + (inputData.bent === "YES" ? "btn-outline-secondary":"btn-secondary")} type='button' value={'YES'} onClick={(e)=>setInputData({...inputData, misc: e.target.value})}>YES</button>
-                    <button className={"btn col-auto lg-auto m-3 " + (inputData.bent === "NO" ? "btn-outline-secondary":"btn-secondary")} type='button' value={'NO'} onClick={(e)=>setInputData({...inputData, misc: e.target.value})}>NO</button>
-                    <button className={"btn col-auto lg-auto m-3 " + (inputData.bent === "NOT SURE" ? "btn-outline-secondary":"btn-secondary")} type='button' value={'NOT SURE'} onClick={(e)=>setInputData({...inputData, misc: e.target.value})}>NOT SURE</button>
+                    <button className={"btn col-auto lg-auto m-3 " + (inputData.misc === "YES" ? "btn-outline-secondary":"btn-secondary")} type='button' value={'YES'} onClick={(e)=>setInputData({...inputData, misc: e.target.value})}>YES</button>
+                    <button className={"btn col-auto lg-auto m-3 " + (inputData.misc === "NO" ? "btn-outline-secondary":"btn-secondary")} type='button' value={'NO'} onClick={(e)=>setInputData({...inputData, misc: e.target.value})}>NO</button>
+                    <button className={"btn col-auto lg-auto m-3 " + (inputData.misc === "NOT SURE" ? "btn-outline-secondary":"btn-secondary")} type='button' value={'NOT SURE'} onClick={(e)=>setInputData({...inputData, misc: e.target.value})}>NOT SURE</button>
                 </div>
-
+                {missingOptions && <p style={{textAlign: "center", color: "Red"}}>All the above fields are mandatory, Please select all the options to continue</p>}
             </div>
 
             <div className='row justify-content-center'>
