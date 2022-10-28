@@ -42,7 +42,6 @@ const navigate = useNavigate()
             setPhoneData(dataWithId)
         }
         getPhoneData()
-
     },[])
 
     const handleChange = (e) => {
