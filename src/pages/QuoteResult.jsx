@@ -10,14 +10,19 @@ const QuoteResult = () => {
   const quoteId = params.quoteId
   const [inputData, setInputData] = useState({})
   const [phoneData, setPhoneData] = useState({})
+  const [documentNotFound, setDocumentNotFound] = useState(false)
 
   useEffect(()=> {
     const getCustomerInputFromDB = async() => {
       try {
         const res = await getDoc(doc(db, "customerSelection", quoteId))
-        console.log(res.data().phoneId)
-        setInputData(res.data())
-        getPhoneDataFromDB(res.data().phoneId)
+        if(res.exists()) {
+          setInputData(res.data())
+          getPhoneDataFromDB(res.data()?.phoneId)
+        } else {
+          setDocumentNotFound(true)
+        }
+        
       } catch(err) {
         console.log(err)
       }
@@ -42,13 +47,20 @@ const QuoteResult = () => {
           {Object.keys(phoneData).length === 0 ?
           
           <div className='position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light'>
-            <div className="spinner-border" style={{width:"3rem",height: "3rem"}} role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <div className="spinner-grow" style={{width: "3rem", height: "3rem"}} role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div> :
+            {documentNotFound ?
+              <div>
+                <h3 className="display-5">No Quote found</h3>
+                <p className="lead">Contact us for more info</p>
+              </div>
+            :<div>
+              <div className="spinner-border" style={{width:"3rem",height: "3rem"}} role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <div className="spinner-grow" style={{width: "3rem", height: "3rem"}} role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>}
+          </div>  :
 
           <div>
             <div class="position-relative overflow-hidden p-3 p-md-5 text-center bg-light">
